@@ -1,13 +1,15 @@
 var myProgram = [
-    ['#print', 'hello, world!'],
-    ['#print', '2 + 2 + 2 =', ['#add', ['#add', 2, 2], 2]],
-    ['#print', '4 - 2 =', ['#substract', 4, 2]],
-    ['#def', '#x', 2],
-    ['#def', '#y', ['#add', 2, 2]],
-    ['#print', '#x'],
-    ['#print', '#y'],
-    ['#def', '#x', ['#add', '#x', '#y']],
-    ['#print', 'yay', '#x']
+    ['#def', '#age', 23],
+    [
+        '#if',
+        ['#greater-than', '#age', 18], 
+        ['#print', 'you can buy a drink'],
+        ['#print', 'no drink for you']
+    ],
+    ['#def', '#status', ['#if', 
+        ['#greater-than', '#age', 18], 'drinking ok', 'drinking not ok']
+    ],
+    ['#print', '#status']
 ]
 
 class Scope {
@@ -34,6 +36,14 @@ var keywords = {
         var value = evalExpression(rawValue, scope);
         scope.set(name, value);
         return value;
+    },
+    '#if': (scope, condition, resultIfTrue, resultIfFalse) => {
+        var evalCondition = evalExpression(condition, scope);
+        if (evalCondition) {
+            return evalExpression(resultIfTrue, scope);
+        } else {
+            return evalExpression(resultIfFalse, scope);
+        }
     }
 }
 
@@ -46,6 +56,9 @@ var library = {
     },
     '#substract': (...args) => {
         return args.reduce((a, b) => a - b);
+    },
+    '#greater-than': (a, b) => {
+        return a > b;
     }
 }
 
